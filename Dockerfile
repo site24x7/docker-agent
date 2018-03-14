@@ -1,6 +1,6 @@
 FROM ubuntu
 
-MAINTAINER site24x7plus<site24x7plus@zohocorp.com>
+MAINTAINER site24x7<support@site24x7.com>
 
 WORKDIR /opt
 
