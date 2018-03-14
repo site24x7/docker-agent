@@ -127,7 +127,23 @@ getEnvValues(){
 }
 
 startSSHServer(){
-	/etc/init.d/ssh restart
+	if [ ! -f "/etc/ssh/ssh_host_rsa_key" ]; then
+		ssh-keygen -f /etc/ssh/ssh_host_rsa_key -N '' -t rsa
+	fi
+	if [ ! -f "/etc/ssh/ssh_host_dsa_key" ]; then
+		ssh-keygen -f /etc/ssh/ssh_host_dsa_key -N '' -t dsa
+	fi
+
+	if [ ! -d "/var/run/sshd" ]; then
+	  mkdir -p /var/run/sshd
+	fi
+
+	PID=$(ps auxww | grep /usr/sbin/sshd |  grep -v grep | awk -F ' ' '{print $2}')
+	if [ "$PID" == "" ]; then 
+		/usr/sbin/sshd -D &
+	else
+		printf "ssh already running $PID" >> /opt/site24x7/site24x7install.log
+	fi
 }
 
 constructInstallationParam(){

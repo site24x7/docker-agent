@@ -1,19 +1,10 @@
-FROM ubuntu
+FROM alpine:3.6
 
 MAINTAINER site24x7plus<site24x7plus@zohocorp.com>
 
 WORKDIR /opt
 
-ENV http_proxy=http://192.168.100.100:3128 https_proxy=http://192.168.100.100:3128
-
-RUN apt-get update && \
-  apt-get install -y python python-dev python-pip python-virtualenv && \
-  apt-get install -y wget && \
-  apt-get install -y vim && \
-  apt-get install -y libssl-dev && \
-  apt-get install -y supervisor && \
-  apt-get install -y openssh-server && \
-  rm -rf /var/lib/apt/lists/*
+RUN apk add -qU --no-cache coreutils wget python-dev tar openssh-server
 
 COPY ["s247_setup.sh", "entrypoint.sh", "heartbeat.sh", "requirements.txt", "singleinstance.py", "./"]
 
