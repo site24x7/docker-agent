@@ -1,0 +1,22 @@
+FROM alpine:3.6
+
+MAINTAINER site24x7plus<site24x7plus@zohocorp.com>
+
+WORKDIR /opt
+
+RUN apk add -qU --no-cache coreutils wget python-dev openssh-server bash gcc musl-dev linux-headers libffi-dev
+
+COPY ["s247_setup.sh", "entrypoint.sh", "heartbeat.sh", "requirements.txt", "singleinstance.py", "./"]
+
+RUN chmod +x entrypoint.sh && chmod +x heartbeat.sh && chmod +x s247_setup.sh
+
+RUN ./s247_setup.sh
+
+RUN wget https://staticdownloads.site24x7.com/server/Site24x7MonitoringAgent.install --no-check-certificate
+
+HEALTHCHECK --interval=10s --timeout=3s --retries=1 \
+  CMD ./heartbeat.sh
+
+ENTRYPOINT ["/opt/entrypoint.sh"]
+
+CMD ["supervisord", "-n", "-c", "/etc/supervisor/supervisord.conf"]
