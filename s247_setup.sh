@@ -20,7 +20,10 @@ setup_pip(){
 
 install_packages(){
 	$PYTHON_VENV_PIP_PATH install --upgrade pip
-	$PYTHON_VENV_PIP_PATH install -r requirements.txt
+	for py_module in $(cat requirements.txt)
+            do
+                $PYTHON_VENV_PIP_PATH install $py_module
+            done
 }
 
 setup_venv

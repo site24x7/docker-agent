@@ -157,6 +157,7 @@ constructInstallationParam(){
 	    fi
         else
             if [ ! -f $ALPINE_SUPERVISOR_CONFD_FILE ]; then
+                mkdir /etc/supervisor.d 2>/dev/null
                 cp $MON_AGENT_SUPERVISOR_CONF_FILE $ALPINE_SUPERVISOR_CONFD_FILE
             fi
         fi
