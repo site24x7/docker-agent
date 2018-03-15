@@ -3,20 +3,28 @@ FROM alpine:3.6
 MAINTAINER site24x7plus<site24x7plus@zohocorp.com>
 
 WORKDIR /opt
-
-RUN apk add -qU --no-cache coreutils wget python-dev openssh-server bash gcc musl-dev linux-headers libffi-dev
+ENV http_proxy=http://192.168.100.100:3128 https_proxy=http://192.168.100.100:3128
+RUN apk add -qU --no-cache coreutils openssl libffi-dev openssl-dev make wget python-dev openssh-server bash gcc musl-dev linux-headers supervisor ca-certificates
 
 COPY ["s247_setup.sh", "entrypoint.sh", "heartbeat.sh", "requirements.txt", "singleinstance.py", "./"]
 
 RUN chmod +x entrypoint.sh && chmod +x heartbeat.sh && chmod +x s247_setup.sh
 
+RUN addgroup site24x7-group
+
+RUN adduser -D site24x7-agent -s /bin/bash -G site24x7-group
+
+RUN echo 'site24x7-agent:site24x7-agent' | chpasswd
+
 RUN ./s247_setup.sh
 
-RUN wget https://staticdownloads.site24x7.com/server/Site24x7MonitoringAgent.install --no-check-certificate
+ENV http_proxy="" https_proxy=""
+
+RUN wget https://staticdownloads.site24x7.com/server/Site24x7MonitoringAgent.install
 
 HEALTHCHECK --interval=10s --timeout=3s --retries=1 \
   CMD ./heartbeat.sh
 
 ENTRYPOINT ["/opt/entrypoint.sh"]
 
-CMD ["supervisord", "-n", "-c", "/etc/supervisor/supervisord.conf"]
+CMD ["supervisord", "-n", "-c", "/etc/supervisord.conf"]

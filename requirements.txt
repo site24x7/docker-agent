@@ -1,9 +1,9 @@
 six
+cffi
 pyparsing
 futures
 xmljson
 psutil
-docker
 pymysql
-cffi
+docker
 paramiko
