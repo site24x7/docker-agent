@@ -79,6 +79,7 @@ variableUpdate(){
 	MON_AGENT_SUPERVISOR_CONF_FILE=$MON_AGENT_CONF_DIR/supervisor.conf
 	SUPERVISOR_CONFD_DIR=/etc/supervisor/conf.d
 	SUPERVISOR_CONFD_FILE=$SUPERVISOR_CONFD_DIR/site24x7-agent.conf
+        ALPINE_SUPERVISOR_CONFD_FILE=/etc/supervisor.d/site24x7-agent.ini
 }
 
 log(){
@@ -150,9 +151,16 @@ constructInstallationParam(){
 	if [ ! -d $MON_AGENT_HOME ]; then
 		bash Site24x7MonitoringAgent.install -i -key="$KEY_VALUE" -dn="$DN_VALUE" -gn="$GN_VALUE" -ct="$CT_VALUE" -tp="$TP_VALUE" -np="$NP_VALUE" -rp="$RP_VALUE" -installer="$INSTALLER_VALUE" -da -psw 
 	fi
-	if [ ! -f $SUPERVISOR_CONFD_FILE ]; then
+        if [ -d $SUPERVISOR_CONFD_DIR ]; then
+	    if [ ! -f $SUPERVISOR_CONFD_FILE ]; then
 		cp $MON_AGENT_SUPERVISOR_CONF_FILE $SUPERVISOR_CONFD_FILE
-	fi
+	    fi
+        else
+            if [ ! -f $ALPINE_SUPERVISOR_CONFD_FILE ]; then
+                mkdir /etc/supervisor.d 2>/dev/null
+                cp $MON_AGENT_SUPERVISOR_CONF_FILE $ALPINE_SUPERVISOR_CONFD_FILE
+            fi
+        fi
 }
 
 INSTALL_DIR="/opt"
