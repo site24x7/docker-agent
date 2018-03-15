@@ -10,6 +10,12 @@ COPY ["s247_setup.sh", "entrypoint.sh", "heartbeat.sh", "requirements.txt", "sin
 
 RUN chmod +x entrypoint.sh && chmod +x heartbeat.sh && chmod +x s247_setup.sh
 
+RUN addgroup site24x7-group
+
+RUN adduser -D site24x7-agent -s /bin/bash -G site24x7-group
+
+RUN echo 'site24x7-agent:site24x7-agent' | chpasswd
+
 RUN ./s247_setup.sh
 
 ENV http_proxy="" https_proxy=""
