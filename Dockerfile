@@ -4,8 +4,6 @@ MAINTAINER site24x7<support@site24x7.com>
 
 WORKDIR /opt
 
-ENV http_proxy=http://192.168.100.100:3128 https_proxy=http://192.168.100.100:3128
-
 RUN apt-get update && \
   apt-get install -y python python-dev python-pip python-virtualenv && \
   apt-get install -y wget && \
