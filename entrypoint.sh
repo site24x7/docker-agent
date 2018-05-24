@@ -127,26 +127,6 @@ getEnvValues(){
 
 }
 
-startSSHServer(){
-	if [ ! -f "/etc/ssh/ssh_host_rsa_key" ]; then
-		ssh-keygen -f /etc/ssh/ssh_host_rsa_key -N '' -t rsa
-	fi
-	if [ ! -f "/etc/ssh/ssh_host_dsa_key" ]; then
-		ssh-keygen -f /etc/ssh/ssh_host_dsa_key -N '' -t dsa
-	fi
-
-	if [ ! -d "/var/run/sshd" ]; then
-	  mkdir -p /var/run/sshd
-	fi
-
-	PID=$(ps auxww | grep /usr/sbin/sshd |  grep -v grep | awk -F ' ' '{print $2}')
-	if [ "$PID" == "" ]; then 
-		/usr/sbin/sshd -D &
-	else
-		printf "ssh already running $PID" >> /opt/site24x7/site24x7install.log
-	fi
-}
-
 constructInstallationParam(){
 	if [ ! -d $MON_AGENT_HOME ]; then
 		bash Site24x7MonitoringAgent.install -i -key="$KEY_VALUE" -dn="$DN_VALUE" -gn="$GN_VALUE" -ct="$CT_VALUE" -tp="$TP_VALUE" -np="$NP_VALUE" -rp="$RP_VALUE" -installer="$INSTALLER_VALUE" -da -psw 
@@ -166,6 +146,5 @@ constructInstallationParam(){
 INSTALL_DIR="/opt"
 variableUpdate
 getEnvValues
-#startSSHServer
 constructInstallationParam
 exec "$@"
