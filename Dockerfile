@@ -10,7 +10,6 @@ RUN apt-get update && \
   apt-get install -y vim && \
   apt-get install -y libssl-dev && \
   apt-get install -y supervisor && \
-  apt-get install -y openssh-server && \
   rm -rf /var/lib/apt/lists/*
 
 COPY ["s247_setup.sh", "entrypoint.sh", "heartbeat.sh", "requirements.txt", "singleinstance.py", "./"]
