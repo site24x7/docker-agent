@@ -4,7 +4,7 @@ MAINTAINER site24x7plus<site24x7plus@zohocorp.com>
 
 WORKDIR /opt
 
-RUN apk add -qU --no-cache coreutils openssl libffi-dev openssl-dev make wget python-dev openssh-server bash gcc musl-dev linux-headers supervisor ca-certificates
+RUN apk add -qU --no-cache coreutils openssl libffi-dev openssl-dev make wget python-dev bash gcc musl-dev linux-headers supervisor ca-certificates
 
 COPY ["s247_setup.sh", "entrypoint.sh", "heartbeat.sh", "requirements.txt", "singleinstance.py", "./"]
 
