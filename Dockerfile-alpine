@@ -14,8 +14,6 @@ RUN addgroup site24x7-group
 
 RUN adduser -D site24x7-agent -s /bin/bash -G site24x7-group
 
-RUN echo 'site24x7-agent:site24x7-agent' | chpasswd
-
 RUN ./s247_setup.sh
 
 RUN wget https://staticdownloads.site24x7.com/server/Site24x7MonitoringAgent.install
