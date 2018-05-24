@@ -166,6 +166,6 @@ constructInstallationParam(){
 INSTALL_DIR="/opt"
 variableUpdate
 getEnvValues
-startSSHServer
+#startSSHServer
 constructInstallationParam
 exec "$@"
