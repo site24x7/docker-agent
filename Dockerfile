@@ -1,6 +1,6 @@
 FROM ubuntu
 
-MAINTAINER site24x7<support@site24x7.com>
+MAINTAINER site24x7<support@site24x7com>
 
 WORKDIR /opt
 
