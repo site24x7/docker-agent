@@ -18,8 +18,6 @@ RUN chmod +x entrypoint.sh && chmod +x heartbeat.sh && chmod +x s247_setup.sh
 
 RUN ./s247_setup.sh
 
-RUN wget https://staticdownloads.site24x7.com/server/Site24x7MonitoringAgent.install
-
 HEALTHCHECK --interval=10s --timeout=3s --retries=1 \
   CMD ./heartbeat.sh
 
