@@ -9,7 +9,7 @@ PYTHON_VENV_PIP_PATH=$PYTHON_VENV_HOME/bin/pip
 
 setup_venv(){
 	wget https://raw.githubusercontent.com/pypa/virtualenv/master/virtualenv.py --no-check-certificate
-	python virtualenv.py --no-pip --no-setuptools "$PYTHON_VENV_HOME"
+	python3 virtualenv.py --no-pip --no-setuptools "$PYTHON_VENV_HOME"
 }
 
 
@@ -20,10 +20,7 @@ setup_pip(){
 
 install_packages(){
 	$PYTHON_VENV_PIP_PATH install --upgrade pip
-	for py_module in $(cat requirements.txt)
-            do
-                $PYTHON_VENV_PIP_PATH install $py_module
-            done
+        $PYTHON_VENV_PIP_PATH install -r /opt/requirements.txt >> pip_out.txt
 }
 
 setup_venv
