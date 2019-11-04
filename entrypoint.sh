@@ -128,9 +128,9 @@ getEnvValues(){
 }
 
 constructInstallationParam(){
-        wget https://staticdownloads.site24x7.com/server/Site24x7MonitoringAgent.install
-	if [ ! -d $MON_AGENT_HOME ]; then
-		bash Site24x7MonitoringAgent.install -i -key="$KEY_VALUE" -dn="$DN_VALUE" -gn="$GN_VALUE" -ct="$CT_VALUE" -tp="$TP_VALUE" -np="$NP_VALUE" -rp="$RP_VALUE" -installer="$INSTALLER_VALUE" -da -psw 
+	wget https://staticdownloads.site24x7.com/server/Site24x7MonitoringAgent.install
+        if [ ! -d $MON_AGENT_HOME ]; then
+		bash Site24x7MonitoringAgent.install -i -key="$KEY_VALUE" -proxy="$PROXY_VALUE" -dn="$DN_VALUE" -gn="$GN_VALUE" -ct="$CT_VALUE" -tp="$TP_VALUE" -np="$NP_VALUE" -rp="$RP_VALUE" -installer="$INSTALLER_VALUE" -da -psw 
 	fi
         if [ -d $SUPERVISOR_CONFD_DIR ]; then
 	    if [ ! -f $SUPERVISOR_CONFD_FILE ]; then
