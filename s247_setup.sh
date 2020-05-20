@@ -8,7 +8,7 @@ PYTHON_VENV_HOME_ACTIVATE=$PYTHON_VENV_HOME/bin/activate
 PYTHON_VENV_PIP_PATH=$PYTHON_VENV_HOME/bin/pip
 
 setup_venv(){
-	wget https://raw.githubusercontent.com/pypa/virtualenv/master/virtualenv.py --no-check-certificate
+	wget https://raw.githubusercontent.com/pypa/virtualenv/16.7.0/virtualenv.py --no-check-certificate
 	python3 virtualenv.py --no-pip --no-setuptools "$PYTHON_VENV_HOME"
 }
 
