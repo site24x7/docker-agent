@@ -92,7 +92,7 @@ findAndReplace() {
 }
 
 python_function(){
-VALUE=`python <<END
+VALUE=`/opt/site24x7/venv/bin/python <<END
 import os
 env_dict = os.environ
 key = "$1"
