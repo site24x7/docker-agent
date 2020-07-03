@@ -6,4 +6,7 @@ xmljson
 psutil
 pymysql
 docker
-paramiko
+prometheus_client
+chardet
+dateparser
+func_timeout
