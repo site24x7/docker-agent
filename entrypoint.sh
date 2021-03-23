@@ -28,10 +28,10 @@ if [ ! -d /host/sys ]; then
 	ERROR_MSG="$ERROR_MSG /sys folder not mounted from host to /host/sys in container."
 fi
 
-if [ ! -S /var/run/docker.sock ]; then
-	SEVERE_FLAG=$BOOL_TRUE
-	ERROR_MSG="$ERROR_MSG /var/run/docker.sock file not mounted from host to /var/run/docker.sock in container."
-fi 
+#if [ ! -S /var/run/docker.sock ]; then
+#	SEVERE_FLAG=$BOOL_TRUE
+#	ERROR_MSG="$ERROR_MSG /var/run/docker.sock file not mounted from host to /var/run/docker.sock in container."
+#fi 
 
 if [ "$SEVERE_FLAG" == "$BOOL_TRUE" ]; then
 	printf "$ERROR_MSG Hence quitting!!! \n"
