@@ -38,11 +38,11 @@ if [ "$SEVERE_FLAG" == "$BOOL_TRUE" ]; then
 	exit $FAILURE
 fi
 
-check_result=`/opt/site24x7/venv/bin/python singleinstance.py`
-if [ "$?" = "1" ]; then
-	printf "$check_result"
-	exit $FAILURE
-fi
+#check_result=`/opt/site24x7/venv/bin/python singleinstance.py`
+#if [ "$?" = "1" ]; then
+#	printf "$check_result"
+#	exit $FAILURE
+#fi
 
 variableUpdate(){
 	PRODUCT_HOME=$INSTALL_DIR/$PRODUCT_NAME_LOWERCASE
