@@ -10,3 +10,4 @@ prometheus_client
 chardet
 dateparser
 func_timeout
+distro
