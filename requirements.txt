@@ -11,3 +11,4 @@ chardet
 dateparser
 func_timeout
 distro
+pycrypto
