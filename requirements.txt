@@ -12,3 +12,4 @@ dateparser
 func_timeout
 distro
 pycrypto
+pkcs7
