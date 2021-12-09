@@ -124,13 +124,15 @@ getEnvValues(){
 	DN_VALUE=`python_function dn`
 	KEY_VALUE=`python_function KEY`
 	HOST_VALUE=`python_function HOST`
+	TAGS_VALUE=`python_function tags`
+	GROUP_VALUE=`python_function gn`
 
 }
 
 constructInstallationParam(){
 	wget https://staticdownloads.site24x7.com/server/Site24x7MonitoringAgent.install
         if [ ! -d $MON_AGENT_HOME ]; then
-		bash Site24x7MonitoringAgent.install -i -key="$KEY_VALUE" -proxy="$PROXY_VALUE" -dn="$DN_VALUE" -gn="$GN_VALUE" -ct="$CT_VALUE" -tp="$TP_VALUE" -np="$NP_VALUE" -rp="$RP_VALUE" -installer="$INSTALLER_VALUE" -da -psw 
+		bash Site24x7MonitoringAgent.install -i -key="$KEY_VALUE" -proxy="$PROXY_VALUE" -dn="$DN_VALUE" -gn="$GN_VALUE" -ct="$CT_VALUE" -tp="$TP_VALUE" -np="$NP_VALUE" -rp="$RP_VALUE" -installer="$INSTALLER_VALUE" -gn="$GROUP_VALUE" -tags="$TAGS_VALUE" -da -psw 
 	fi
         if [ -d $SUPERVISOR_CONFD_DIR ]; then
 	    if [ ! -f $SUPERVISOR_CONFD_FILE ]; then
