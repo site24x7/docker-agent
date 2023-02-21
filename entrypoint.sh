@@ -130,7 +130,6 @@ getEnvValues(){
 }
 
 constructInstallationParam(){
-	wget https://staticdownloads.site24x7.com/server/Site24x7MonitoringAgent.install
         if [ ! -d $MON_AGENT_HOME ]; then
 		bash Site24x7MonitoringAgent.install -i -key="$KEY_VALUE" -proxy="$PROXY_VALUE" -dn="$DN_VALUE" -gn="$GN_VALUE" -ct="$CT_VALUE" -tp="$TP_VALUE" -np="$NP_VALUE" -rp="$RP_VALUE" -installer="$INSTALLER_VALUE" -gn="$GROUP_VALUE" -tags="$TAGS_VALUE" -da -psw 
 	fi
@@ -149,5 +148,19 @@ constructInstallationParam(){
 INSTALL_DIR="/opt"
 variableUpdate
 getEnvValues
-constructInstallationParam
+
+x=1
+while [ $x -le 60 ]
+do
+        wget https://staticdownloads.site24x7.com/server/Site24x7MonitoringAgent.install
+        if [ $? = 0 ]
+        then
+                constructInstallationParam
+                break
+        fi
+        x=$(( $x+1 ))
+        printf "Not able to download Site24x7 Agent Installer - Retry after 1 minute \n"
+        sleep 60
+done
+
 exec "$@"
