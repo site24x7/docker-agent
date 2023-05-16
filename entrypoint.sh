@@ -18,14 +18,15 @@ if [ -z $KEY ]; then
 	ERROR_MSG="KEY not set as env variable!!!"
 fi
 
-if [ ! -d /host/proc ]; then
-	SEVERE_FLAG=$BOOL_TRUE
-	ERROR_MSG="$ERROR_MSG /proc folder not mounted from host to /host/proc in container."
-fi
-
-if [ ! -d /host/sys ]; then
-	SEVERE_FLAG=$BOOL_TRUE
-	ERROR_MSG="$ERROR_MSG /sys folder not mounted from host to /host/sys in container."
+if [ -z $EKS_FARGATE ]; then
+        if [ ! -d /host/proc ]; then
+                SEVERE_FLAG=$BOOL_TRUE
+                ERROR_MSG="$ERROR_MSG /proc folder not mounted from host to /host/proc in container."
+        fi
+        if [ ! -d /host/sys ]; then
+                SEVERE_FLAG=$BOOL_TRUE
+                ERROR_MSG="$ERROR_MSG /sys folder not mounted from host to /host/sys in container."
+        fi
 fi
 
 #if [ ! -S /var/run/docker.sock ]; then
