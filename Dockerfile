@@ -1,4 +1,4 @@
-FROM ubuntu
+FROM ubuntu:20.04
 
 MAINTAINER site24x7<support@site24x7.com>
 
