@@ -114,6 +114,31 @@ echo $VALUE
 
 }
 
+domain_decider(){
+VALUE=`/opt/site24x7/venv/bin/python <<END
+import os
+domain_map_dict = {
+    "us": "https://staticdownloads.site24x7.com",
+    "eu": "https://staticdownloads.site24x7.eu",
+    "cn": "https://staticdownloads.site24x7.cn",
+    "au": "https://staticdownloads.site24x7.net.au",
+    "in": "https://staticdownloads.site24x7.in",
+    "gd": "https://staticdownloads.site24x7.com",
+    "jp": "https://staticdownloads.site24x7.jp",
+    "in_hd": "https://staticdownloads.site24x7.in"
+}
+domain = "https://staticdownloads.site24x7.com"
+if "KEY" in os.environ:
+        device_key = os.environ["KEY"]
+        prefix = '_'.join(device_key.split('_')[:-1])
+        if prefix in domain_map_dict.keys():
+                domain = domain_map_dict[prefix]
+print(domain)
+END`
+echo $VALUE
+}
+
+
 getEnvValues(){
 	GN_VALUE=`python_function gn`
 	CT_VALUE=`python_function ct`
@@ -153,7 +178,8 @@ getEnvValues
 x=1
 while [ $x -le 60 ]
 do
-        wget https://staticdownloads.site24x7.com/server/Site24x7MonitoringAgent.install
+	DOMAIN=`domain_decider`
+        wget $DOMAIN/server/Site24x7MonitoringAgent.install
         if [ $? = 0 ]
         then
                 constructInstallationParam
