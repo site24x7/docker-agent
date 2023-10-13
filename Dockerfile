@@ -9,6 +9,9 @@ RUN apt-get update && \
   apt-get install -y wget && \
   apt-get install -y vim && \
   apt-get install -y libssl-dev && \
+  apt-get install -y net-tools && \
+  apt-get install -y curl && \
+  apt-get install -y iputils-ping && \
   apt-get install -y supervisor && \
   rm -rf /var/lib/apt/lists/*
 
