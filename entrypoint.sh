@@ -21,11 +21,11 @@ fi
 if [[ -z $EKS_FARGATE && -z $GKE_AUTOPILOT && -z $NON_MOUNTED_AGENT ]]; then
         if [ ! -d /host/proc ]; then
                 SEVERE_FLAG=$BOOL_TRUE
-                ERROR_MSG="$ERROR_MSG /proc folder not mounted from host to /host/proc in container.."
+                ERROR_MSG="$ERROR_MSG /proc folder not mounted from host to /host/proc in container."
         fi
         if [ ! -d /host/sys ]; then
                 SEVERE_FLAG=$BOOL_TRUE
-                ERROR_MSG="$ERROR_MSG /sys folder not mounted from host to /host/sys in container.."
+                ERROR_MSG="$ERROR_MSG /sys folder not mounted from host to /host/sys in container."
         fi
 fi
 
