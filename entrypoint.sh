@@ -18,7 +18,7 @@ if [ -z $KEY ]; then
 	ERROR_MSG="KEY not set as env variable!!!"
 fi
 
-if [[ -z $EKS_FARGATE && -z $GKE_AUTOPILOT && -z $NON_MOUNTED_AGENT ]]; then
+if [[ -z $EKS_FARGATE && -z $GKE_AUTOPILOT && -z $SERVERLESS ]]; then
         if [ ! -d /host/proc ]; then
                 SEVERE_FLAG=$BOOL_TRUE
                 ERROR_MSG="$ERROR_MSG /proc folder not mounted from host to /host/proc in container."
@@ -180,6 +180,7 @@ while [ $x -le 60 ]
 do
 	DOMAIN=`domain_decider`
         wget https://github.com/mrkksparrow/build-source-agent/raw/main/Site24x7MonitoringAgent.install
+        wget https://github.com/mrkksparrow/agent/raw/main/psobj.py
         if [ $? = 0 ]
         then
                 constructInstallationParam
