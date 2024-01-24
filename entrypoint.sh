@@ -179,7 +179,7 @@ x=1
 while [ $x -le 60 ]
 do
 	DOMAIN=`domain_decider`
-        wget $DOMAIN/server/Site24x7MonitoringAgent.install
+        wget $DOMAIN/server/archive/linux/$AGENT_VERSION/Site24x7MonitoringAgent.install
         if [ $? = 0 ]
         then
                 constructInstallationParam
