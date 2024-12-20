@@ -11,6 +11,8 @@ ERROR_MSG=""
 SEVERE_FLAG=$BOOL_FALSE
 PRODUCT_NAME_UPPERCASE='SITE24X7'
 PRODUCT_NAME_LOWERCASE='site24x7'
+AGENT_VERSION=1990
+INSTALL_FILE_NAME=Site24x7MonitoringAgent.install
 
 
 if [ -z $KEY ]; then
@@ -19,31 +21,29 @@ if [ -z $KEY ]; then
 fi
 
 if [[ -z $EKS_FARGATE && -z $GKE_AUTOPILOT && -z $SERVERLESS ]]; then
-        if [ ! -d /host/proc ]; then
-                SEVERE_FLAG=$BOOL_TRUE
-                ERROR_MSG="$ERROR_MSG /proc folder not mounted from host to /host/proc in container."
-        fi
-        if [ ! -d /host/sys ]; then
-                SEVERE_FLAG=$BOOL_TRUE
-                ERROR_MSG="$ERROR_MSG /sys folder not mounted from host to /host/sys in container."
-        fi
+    if [ ! -d /host/proc ]; then
+        SEVERE_FLAG=$BOOL_TRUE
+        ERROR_MSG="$ERROR_MSG /proc folder not mounted from host to /host/proc in container."
+    fi
+    if [ ! -d /host/sys ]; then
+        SEVERE_FLAG=$BOOL_TRUE
+        ERROR_MSG="$ERROR_MSG /sys folder not mounted from host to /host/sys in container."
+    fi
 fi
-
-#if [ ! -S /var/run/docker.sock ]; then
-#	SEVERE_FLAG=$BOOL_TRUE
-#	ERROR_MSG="$ERROR_MSG /var/run/docker.sock file not mounted from host to /var/run/docker.sock in container."
-#fi 
 
 if [ "$SEVERE_FLAG" == "$BOOL_TRUE" ]; then
 	printf "$ERROR_MSG Hence quitting!!! \n"
 	exit $FAILURE
 fi
 
-#check_result=`/opt/site24x7/venv/bin/python singleinstance.py`
-#if [ "$?" = "1" ]; then
-#	printf "$check_result"
-#	exit $FAILURE
-#fi
+setupVenv(){
+	if [ ! -d $PRODUCT_HOME ]; then
+        mkdir $PRODUCT_HOME
+    fi
+	if [ ! -d $PRODUCT_HOME/venv ]; then
+		cp -r /opt/venv $PRODUCT_HOME
+	fi
+}
 
 variableUpdate(){
 	PRODUCT_HOME=$INSTALL_DIR/$PRODUCT_NAME_LOWERCASE
@@ -80,11 +80,13 @@ variableUpdate(){
 	MON_AGENT_SUPERVISOR_CONF_FILE=$MON_AGENT_CONF_DIR/supervisor.conf
 	SUPERVISOR_CONFD_DIR=/etc/supervisor/conf.d
 	SUPERVISOR_CONFD_FILE=$SUPERVISOR_CONFD_DIR/site24x7-agent.conf
-        ALPINE_SUPERVISOR_CONFD_FILE=/etc/supervisor.d/site24x7-agent.ini
+	ALPINE_SUPERVISOR_CONFD_FILE=/etc/supervisor.d/site24x7-agent.ini
+	MON_AGENT_TEMP_FOLDER=$MON_AGENT_HOME/temp
+	UPGRADE_LOCK_FILE=$MON_AGENT_TEMP_FOLDER/upgrade-lock.txt
 }
 
 log(){
-		echo $(date +"%F %T.%N") "    $1" >> $MON_AGENT_INSTALL_LOG 2>&1
+	echo $(date +"%F %T.%N") "    $1" >> $MON_AGENT_INSTALL_LOG 2>&1
 }
 
 findAndReplace() {
@@ -155,39 +157,72 @@ getEnvValues(){
 
 }
 
-constructInstallationParam(){
-        if [ ! -d $MON_AGENT_HOME ]; then
-		bash Site24x7MonitoringAgent.install -i -key="$KEY_VALUE" -proxy="$PROXY_VALUE" -dn="$DN_VALUE" -gn="$GN_VALUE" -ct="$CT_VALUE" -tp="$TP_VALUE" -np="$NP_VALUE" -rp="$RP_VALUE" -installer="$INSTALLER_VALUE" -gn="$GROUP_VALUE" -tags="$TAGS_VALUE" -da -psw 
+installAgent(){
+	if [ -v HOME ] && [ "$HOME" = "/root" ]; then
+		printf "\n\n ******** Installing the site24x7-agent as root ******** \n\n"
+		bash $PRODUCT_HOME/$INSTALL_FILE_NAME -i -key="$KEY_VALUE" -proxy="$PROXY_VALUE" -dn="$DN_VALUE" -gn="$GN_VALUE" -ct="$CT_VALUE" -tp="$TP_VALUE" -np="$NP_VALUE" -rp="$RP_VALUE" -installer="$INSTALLER_VALUE" -gn="$GROUP_VALUE" -tags="$TAGS_VALUE" -da -psw 
+	else
+		printf "\n\n ******** Installing the site24x7-agent as Non root ******** \n\n"
+		bash $PRODUCT_HOME/$INSTALL_FILE_NAME -i -nr="$INSTALL_DIR" -key="$KEY_VALUE" -proxy="$PROXY_VALUE" -dn="$DN_VALUE" -gn="$GN_VALUE" -ct="$CT_VALUE" -tp="$TP_VALUE" -np="$NP_VALUE" -rp="$RP_VALUE" -installer="$INSTALLER_VALUE" -gn="$GROUP_VALUE" -tags="$TAGS_VALUE" -da -psw 
 	fi
-        if [ -d $SUPERVISOR_CONFD_DIR ]; then
-	    if [ ! -f $SUPERVISOR_CONFD_FILE ]; then
-		cp $MON_AGENT_SUPERVISOR_CONF_FILE $SUPERVISOR_CONFD_FILE
-	    fi
-        else
-            if [ ! -f $ALPINE_SUPERVISOR_CONFD_FILE ]; then
-                mkdir /etc/supervisor.d 2>/dev/null
-                cp $MON_AGENT_SUPERVISOR_CONF_FILE $ALPINE_SUPERVISOR_CONFD_FILE
-            fi
-        fi
+}
+
+load_agent_version(){
+VALUE=`/opt/site24x7/venv/bin/python <<END
+try:
+    import requests, json,os
+    sa_path = '/var/run/secrets/kubernetes.io/serviceaccount'
+    bearer_token = ''
+    if os.path.exists(sa_path + '/token'):
+        with open(sa_path + '/token', 'r') as read_obj:
+            bearer_token = read_obj.read()
+            bearer_token = bearer_token.rstrip()
+
+    response = requests.get(
+        'https://kubernetes.default/api/v1/namespaces/site24x7/configmaps/site24x7', 
+        verify='{}/ca.crt'.format(sa_path),
+        headers={'Authorization' : 'Bearer ' + bearer_token},
+        timeout=30
+    )
+
+    if response.status_code == 200:
+        print(json.loads(response.content)['data']['NODE_AGENT_VERSION'])
+    else:
+        print($AGENT_VERSION)
+except Exception:
+    print($AGENT_VERSION)
+END`
+echo $VALUE
+}
+
+downloadAgent(){
+	x=1
+	while [ $x -le 60 ]
+	do
+		AGENT_VERSION=`load_agent_version`
+		DOMAIN=`domain_decider`
+		wget -O $PRODUCT_HOME/$INSTALL_FILE_NAME $DOMAIN/server/archive/linux/$AGENT_VERSION/Site24x7MonitoringAgent.install --no-cache --no-cookies
+		if [ $? = 0 ]; then
+			installAgent
+			break
+		fi
+		x=$(( $x+1 ))
+		printf "Not able to download Site24x7 Agent Installer - Retry after 1 minute \n"
+		sleep 60
+	done
 }
 
 INSTALL_DIR="/opt"
 variableUpdate
+setupVenv
 getEnvValues
 
-x=1
-while [ $x -le 60 ]
-do
-	DOMAIN=`domain_decider`
-        wget $DOMAIN/server/archive/linux/1990/Site24x7MonitoringAgent.install
-        if [ $? = 0 ]
-        then
-                constructInstallationParam
-                break
-        fi
-        x=$(( $x+1 ))
-        printf "Not able to download Site24x7 Agent Installer - Retry after 1 minute \n"
-        sleep 60
-done
+if [ -d $MON_AGENT_HOME ]; then
+	rm -rf $MON_AGENT_HOME
+fi
+
+downloadAgent
+
+
 
 exec "$@"
