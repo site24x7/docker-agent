@@ -13,3 +13,4 @@ func_timeout
 distro
 pycrypto
 pkcs7
+PyYAML
