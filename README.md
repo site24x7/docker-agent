@@ -35,6 +35,9 @@ docker run -d --name site24x7-agent --restart always -v /var/run/docker.sock:/va
 
 Only volumes that are mounted into the container can have the disk metrics being reported
 
+## Support
+If you need help, email us at support@site24x7.com
+
 ## Contribute
 
 If you notice a limitation or a bug with this container, feel free to open a [Github issue](https://github.com/site24x7/docker-agent/issues).
