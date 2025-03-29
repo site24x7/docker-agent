@@ -1,36 +1,34 @@
-# Site24x7 Agent Dockerfile
+# Site24x7 Container Agent
 
-This repository is meant to build the base image for a Site24x7 Agent container. You will have to use the resulting image to configure and run the Agent.
+This repository is meant to build the Site24x7 Linux agent container image. You can customise the image with available options and run the container to monitor your host server.
 
 
-## Quick Start
+## Create image
 
-Run the below command in your server to monitor the host via site24x7-agent container
+Download and unzip the repository in the server host. Then navigate to the extracted folder and execute the below command to build the `site24x7-agent:latest` image.
 
 ```
-docker run -d --name site24x7-agent \
-  -v /var/run/docker.sock:/var/run/docker.sock:ro \
-  -v /proc/:/host/proc/:ro \
-  -v /sys:/host/sys/:ro \
-  -e KEY=<device_key> \
-  site24x7/docker-agent:latest
+docker build -t site24x7-agent .
 ```
 
-## Configuration
+## Run the agent container
+Execute the below command to monitor the server host via `site24x7-agent` container
 
+```
+docker run -d --name site24x7-agent --restart always -v /var/run/docker.sock:/var/run/docker.sock:ro -v /:/host:ro -v /var/lib/docker/containers/:/var/lib/docker/containers/:ro -e KEY=<DEVICE_KEY> site24x7-agent:latest
+```
+
+## Customizations
+
+### Agent version
+If you want to install the Site24x7 Linux agent of specific version, edit the `AGENT_VERSION` variable in `entrypoint.sh` with the valid linux [version](https://www.site24x7.com/help/server-agent-release-notes.html#linux) and build the image. Then build and run the image as container.
 
 ### Hostname
 
-By default the agent container will use the `Name` field found in the `docker info` command from the host as a hostname. To change this behavior you can update the `hostname` field in `/opt/site24x7/monagent/conf/monagent.cfg`. The easiest way for this is to use the `HOSTNAME` environment variable (see below).
+By default the agent container will use the `Name` field found in the `docker info` command from the host as a hostname. To change this behavior you can update the `hostname` field in `/opt/site24x7/monagent/conf/monagent.cfg`. The easiest way for this is to use the `HOSTNAME` environment variable in docker run command.
 
 ```
-docker run -d --name site24x7-agent \
-  -v /var/run/docker.sock:/var/run/docker.sock:ro \
-  -v /proc/:/host/proc/:ro \
-  -v /sys:/host/sys/:ro \
-  -e KEY=<device_key> \
-  -e HOSTNAME=<host_name> \
-  site24x7/docker-agent:latest
+docker run -d --name site24x7-agent --restart always -v /var/run/docker.sock:/var/run/docker.sock:ro -v /:/host:ro -v /var/lib/docker/containers/:/var/lib/docker/containers/:ro -e KEY=<DEVICE_KEY> -e HOSTNAME=<host_name> site24x7-agent:latest
 ```
 
 ## Limitations
