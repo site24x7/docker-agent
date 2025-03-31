@@ -11,7 +11,7 @@ ERROR_MSG=""
 SEVERE_FLAG=$BOOL_FALSE
 PRODUCT_NAME_UPPERCASE='SITE24X7'
 PRODUCT_NAME_LOWERCASE='site24x7'
-AGENT_VERSION=1990
+AGENT_VERSION=2000
 INSTALL_FILE_NAME=Site24x7MonitoringAgent.install
 
 
@@ -179,7 +179,7 @@ try:
             bearer_token = bearer_token.rstrip()
 
     response = requests.get(
-        'https://kubernetes.default/api/v1/namespaces/site24x7/configmaps/site24x7', 
+        'https://kubernetes.default/api/v1/namespaces/$NAMESPACE/configmaps/site24x7', 
         verify='{}/ca.crt'.format(sa_path),
         headers={'Authorization' : 'Bearer ' + bearer_token},
         timeout=30
@@ -222,6 +222,7 @@ if [ -d $MON_AGENT_HOME ]; then
 fi
 
 downloadAgent
+mkdir $MON_AGENT_HOME/tmp
 
 
 
