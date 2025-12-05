@@ -5,7 +5,7 @@ futures
 xmljson
 psutil
 pymysql
-urllib3==1.26.19
+urllib3==2.6.0
 docker
 prometheus_client
 chardet
